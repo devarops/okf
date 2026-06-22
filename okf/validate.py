@@ -1,5 +1,7 @@
 from pathlib import Path
 
+_SUCCESS_MESSAGE = "🎉 OK! No errors found"
+
 
 def validate(path="bundle"):
     errors = []
@@ -12,7 +14,7 @@ def validate(path="bundle"):
         if "title" not in frontmatter:
             errors.append(f"Missing title in {md_file.name}")
     if not errors:
-        print("🎉 OK! No errors found")
+        print(_SUCCESS_MESSAGE)
     return errors
 
 
