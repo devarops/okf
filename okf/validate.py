@@ -10,8 +10,8 @@ _REQUIRED_FIELDS = {
 
 def validate(path="bundle"):
     errors = []
-    bundle = Path(path)
-    for md_file in sorted(bundle.glob("*.md")):
+    bundle_root = Path(path)
+    for md_file in sorted(bundle_root.glob("*.md")):
         text = md_file.read_text()
         frontmatter = _parse_frontmatter(text)
         for field, template in _REQUIRED_FIELDS.items():
