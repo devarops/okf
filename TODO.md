@@ -1,6 +1,5 @@
 # The Gold
-- okf.validate(): main validation function with one single check implemented
-
+- okf.validate() prints "🎉 OK! No errors found" when the bundle is clean
 
 ---
 
