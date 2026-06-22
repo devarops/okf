@@ -1,3 +1,12 @@
+# The Gold
+- Implement check_okf.py
+
+---
+
+# Backlog not part of the current Gold
+
+The items listed below are not part of the current Gold. They are backlog items kept for future cycles.
+
 # OKF Conformance Checker — Plan
 
 Write a deterministic Python script `check_okf.py` that validates this
