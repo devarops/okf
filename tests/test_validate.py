@@ -16,6 +16,11 @@ def test_validate_defaults_to_bundle():
     assert isinstance(errors, list)
 
 
+def test_validate_reports_missing_title():
+    errors = okf.validate(str(FIXTURES))
+    assert any("title" in err.lower() for err in errors)
+
+
 def test_validate_prints_success_message_when_clean(capsys):
     okf.validate()
     captured = capsys.readouterr()
