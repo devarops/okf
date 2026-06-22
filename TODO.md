@@ -1,5 +1,6 @@
 # The Gold
-- Implement check_okf.py
+- okf.validate(): main validation function with one single check implemented
+
 
 ---
 
