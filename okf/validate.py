@@ -32,9 +32,9 @@ def _parse_frontmatter(text):
             break
     if end is None:
         return {}
-    front = lines[1:end]
+    frontmatter_lines = lines[1:end]
     result = {}
-    for line in front:
+    for line in frontmatter_lines:
         if ":" in line:
             key, _, value = line.partition(":")
             result[key.strip()] = value.strip()
