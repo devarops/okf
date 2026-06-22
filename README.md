@@ -8,7 +8,7 @@ what to emphasize.
 
 Concept pages live under `bundle/`.  Source documents go in `raw/`.
 
-Run the conformance checker to verify the wiki follows the format:
+Run the validator to verify the wiki follows the format:
 
-    python check_okf.py
+    make validate
 

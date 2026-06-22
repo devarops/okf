@@ -30,17 +30,38 @@ Links in `index.md` and `log.md` are not checked.
 - `log.md` — date headings must be ISO 8601 (`YYYY-MM-DD`).
   Warn on bold prefixes outside the conventional set.
 
-## Planned tooling
-
-`check_okf.py` — deterministic Python script, standard library only.
-Validates the bundle against the SPEC and extra requirements above.
-Usage: `python check_okf.py [bundle_root]`.
-
 ## Commit style
 
 Prefix every commit with a gitmoji followed by an imperative verb.
 First line under 72 characters.  Blank line then body.
+TDD phases: `🛑 🧪` (Red), `✅ 🧪` (Green), `♻️` (Refactor).
+Config/tooling: `🔧`, lint fix: `🚨`, goal update: `🎯`.
+
+## Package structure
+
+Validation logic lives in the `okf/` Python package (not a standalone script).
+Entry point: `okf.validate(path="bundle")` — returns a list of error strings.
+Prints `🎉 OK! No errors found` to stdout when the bundle is clean.
+Required fields: `type`, `title`, `description` — checked for presence and
+non-empty value via a lookup table in `okf/validate.py`.
+
+## Test fixtures
+
+Non-conformant concept documents go under `tests/data/`.
+Each file tests one violation (e.g. missing type, empty value, missing title).
+The fixture directory `tests/data/` is validated by most tests.
+
+## Developer workflow
+
+- `make setup` — clean build caches, install package in editable mode.
+- `make tests` — run `pytest --verbose tests` inside the `okf_ci` Docker container.
+- `docker exec okf_ci make tests` — run tests if container is already running.
+- `make validate` — run `okf.validate()` on the default `bundle/` directory.
+- `make check` — lint (black, flake8, mypy) across `okf/` and `tests/`.
+- `make format` — auto-format with black.
+- `make clean` — remove `tests/__pycache__` (root-owned from Docker runs).
 
 ## Current focus
 
-The Gold is implementing `check_okf.py`.
+The Gold is `okf.validate()` — required field validation for concept
+documents.

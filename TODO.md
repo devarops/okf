@@ -1,5 +1,5 @@
 # The Gold
-- okf.validate() reports an error when description field is missing or empty
+- (None)
 
 ---
 
@@ -7,20 +7,14 @@
 
 The items listed below are not part of the current Gold. They are backlog items kept for future cycles.
 
-# OKF Conformance Checker — Plan
-
-Write a deterministic Python script `check_okf.py` that validates this
-repository against the [OKF v0.1 Spec][spec] plus a small set of extra
-requirements that do not contradict it.
-
 ## How it runs
 
-- Single file, zero dependencies beyond the Python standard library.
-- Accepts one optional argument: the bundle root directory (defaults to `.`).
-- Exits with code 0 if the bundle is conformant, 1 if not.
-- Prints one line per issue found: `ERROR:` or `WARN:` prefix.
-- All file paths are printed relative to the bundle root.
-- The script MUST be deterministic: same input → same output every time.
+- `okf.validate()` in the `okf` package, zero dependencies beyond the Python standard library.
+- Accepts optional `path` argument: bundle root directory (defaults to `"bundle"`).
+- Returns a list of error strings. Empty list means the bundle is conformant.
+- Prints `🎉 OK! No errors found` to stdout when the bundle is clean.
+- All file paths in errors are relative to the bundle root.
+- Deterministic: same input → same output every time.
 
 ## Conformance criteria
 
@@ -45,7 +39,7 @@ Two filenames are reserved and MUST NOT appear in the concept set:
 | Filename | Rule |
 |----------|------|
 | `index.md` | No frontmatter. Exception: a root `index.md` MAY contain a frontmatter block with a single key `okf_version`. |
-| `log.md` | Date headings MUST be valid ISO 8601 (`YYYY-MM-DD`). Warn if a log entry uses a bold prefix other than the conventional set (`**Update**`, `**Creation**`, `**Deprecation**`, `**Initialization**`). |
+| `log.md` | Date headings MUST be valid ISO 8601 (`YYYY-MM-DD`). Warn if a bold prefix outside the conventional set (`**Update**`, `**Creation**`, `**Deprecation**`, `**Initialization**`). |
 
 If a reserved file does not parse as valid markdown, that is an error.
 
@@ -61,33 +55,15 @@ delimited by `---` on its own line at the start of the file and a
 closing `---` on its own line. If the block is absent or unparseable,
 that is an error.
 
-**3b. Required field**
+**3b. Field word count limits (extra requirement)**
 
-The frontmatter MUST contain a `type` key with a non-empty string value.
-If `type` is missing, empty, or not a string, that is an error.
+- `title` — MUST be 10 words or shorter.
+- `description` — MUST be 20 words or shorter.
 
-**3c. Required fields beyond the spec (extra requirement)**
+A field exceeding its word limit is an error. Presence and non-empty
+value are already validated.
 
-The spec requires only `type`. This checker adds two more mandatory
-fields because the index generator depends on them:
-
-- `title` — MUST be present, non-empty, and 10 words or shorter.
-  Used as the display name in auto-generated `index.md` entries.
-- `description` — MUST be present, non-empty, and 20 words or shorter.
-  Used as the one-line summary in auto-generated `index.md` entries.
-
-If `title` or `description` is missing, empty, or not a string, that
-is an error.
-
-**3d. Optional fields**
-
-All remaining fields (`resource`, `tags`, `timestamp`, and any
-producer-defined keys) are optional. No format or presence validation
-is applied. Unknown keys are silently accepted. This matches the spec's
-requirement that consumers MUST NOT reject bundles for missing optional
-fields or unknown keys.
-
-**3e. Filename convention (extra requirement)**
+**3c. Filename convention (extra requirement)**
 
 Every concept document filename MUST match the pattern:
 
@@ -104,7 +80,7 @@ exempt from this requirement.
 ### 4. Cross-link resolution (extra requirement)
 
 The spec says consumers MUST tolerate broken links. This checker
-**elevates that to an error**.
+elevates that to an error.
 
 Parse every markdown link in every concept document body (both inline
 `[text](url)` and reference-style `[text][ref]` forms). For each link:
@@ -162,10 +138,8 @@ exempt from all three prose style rules.
 
 | Situation | Handling |
 |-----------|----------|
-| Empty `bundle/` directory | Passes (vacuously conformant). |
 | `.md` file with only frontmatter and no body | Passes (body is optional). |
 | `.md` file with only body and no frontmatter | Error. |
-| Frontmatter with `type: ""` (empty string) | Error. |
 | Frontmatter with `type: 42` (not a string) | Error (must be non-empty string). |
 | Symlinks to `.md` files under `bundle/` | Followed and validated. |
 | `.md` file in `raw/` | Skipped entirely. |
@@ -176,16 +150,14 @@ exempt from all three prose style rules.
 ## Implementation plan
 
 ```
-check_okf.py
-├── main()
-│   ├── parse_args()              # bundle root, optional path
-│   ├── discover_files(root)      # walk tree, skip raw/, return file list
-│   ├── classify(files)           # split into reserved vs concept
-│   ├── validate_reserved(files)  # index.md + log.md rules
-│   ├── validate_concepts(files)  # frontmatter + type field + filename
-│   ├── validate_links(files)     # cross-link resolution (concepts only)
-│   ├── validate_prose(files)     # sentence-per-line, ≤25 words, ≤200 total
-│   └── report(errors, warnings)  # print, exit 0/1
+okf/validate.py
+└── validate(path)
+    ├── discover_files(root)      # walk tree, skip raw/, return file list
+    ├── validate_concepts(files)  # frontmatter + required fields + filename
+    ├── validate_reserved(files)  # index.md + log.md rules
+    ├── validate_links(files)     # cross-link resolution (concepts only)
+    ├── validate_prose(files)     # sentence-per-line, ≤25 words, ≤200 total
+    └── return errors             # caller prints success if empty
 ```
 
 Each function is a pure function of its inputs (file tree on disk).
