@@ -9,3 +9,8 @@ def test_validate_reports_missing_type():
     assert isinstance(errors, list)
     assert len(errors) > 0
     assert "type" in errors[0].lower()
+
+
+def test_validate_defaults_to_bundle():
+    errors = okf.validate()
+    assert isinstance(errors, list)
