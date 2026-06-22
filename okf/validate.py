@@ -2,8 +2,9 @@ from pathlib import Path
 
 _SUCCESS_MESSAGE = "🎉 OK! No errors found"
 _REQUIRED_FIELDS = {
-    "type": "Missing or empty type in {file}",
+    "description": "Missing or empty description in {file}",
     "title": "Missing or empty title in {file}",
+    "type": "Missing or empty type in {file}",
 }
 
 
