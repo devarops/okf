@@ -10,6 +10,12 @@ This project adheres to [Semantic Versioning](https://semver.org/) with
 
 ### Added
 
+- (none)
+
+## [0.1.0] - 2026-06-22
+
+### Added
+
 - `okf` Python package with `okf.validate()` function for bundle validation
 - Required field checks for `type`, `title`, and `description` in concept
   document frontmatter (presence and non-empty value)
@@ -27,3 +33,6 @@ This project adheres to [Semantic Versioning](https://semver.org/) with
 - CHANGELOG.md following Keep a Changelog
 - README describing the repo as an OKF v0.1 conformant personal knowledge
   wiki
+
+[Unreleased]: https://github.com/devarops/okf/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/devarops/okf/releases/tag/v0.1.0
