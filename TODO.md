@@ -1,5 +1,5 @@
 # The Gold
-- okf.validate() reports an error when type field has an empty value
+- okf.validate() reports an error when description field is missing or empty
 
 ---
 

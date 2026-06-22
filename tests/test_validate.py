@@ -26,6 +26,11 @@ def test_validate_reports_empty_type():
     assert any("type" in err.lower() and "empty" in err.lower() for err in errors)
 
 
+def test_validate_reports_missing_description():
+    errors = okf.validate(str(FIXTURES))
+    assert any("description" in err.lower() for err in errors)
+
+
 def test_validate_prints_success_message_when_clean(capsys):
     okf.validate()
     captured = capsys.readouterr()
