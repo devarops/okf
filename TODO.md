@@ -1,5 +1,5 @@
 # The Gold
-- okf.validate() prints "🎉 OK! No errors found" when the bundle is clean
+- okf.validate() reports an error when type field has an empty value
 
 ---
 
