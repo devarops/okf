@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def validate(path):
+def validate(path="bundle"):
     errors = []
     bundle = Path(path)
     for md_file in sorted(bundle.glob("*.md")):
