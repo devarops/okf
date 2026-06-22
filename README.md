@@ -1,14 +1,17 @@
-# My personal knowledge wiki
+# LLM Wiki in the Open Knowledge Format
 
-A conformant Open Knowledge Format v0.1 bundle.
+This is my personal LLM Wiki.
+It conforms to the Open Knowledge Format (OKF) v0.1 specification.
 
-An LLM agent reads source documents, extracts key information, and
-builds this wiki.  I browse the results, ask questions, and guide
-what to emphasize.
+The content is entirely generated and maintained by LLM agents.
+An LLM agent reads source documents, extracts key information, and builds this wiki.
+I browse the results and ask questions, but I don't directly edit the wiki.
 
-Concept pages live under `bundle/`.  Source documents go in `raw/`.
+Concept pages live under `bundle/`.
+Source documents go in `raw/`.
 
 Run the validator to verify the wiki follows the format:
 
-    make validate
-
+```shell
+make validate
+```
