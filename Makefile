@@ -1,1 +1,2 @@
 tests:
+	pytest --verbose tests
