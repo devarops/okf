@@ -14,3 +14,9 @@ def test_validate_reports_missing_type():
 def test_validate_defaults_to_bundle():
     errors = okf.validate()
     assert isinstance(errors, list)
+
+
+def test_validate_prints_success_message_when_clean(capsys):
+    okf.validate()
+    captured = capsys.readouterr()
+    assert "🎉 OK! No errors found" in captured.out
