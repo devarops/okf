@@ -31,18 +31,14 @@ The fixture directory `tests/data/` is validated by most tests.
 - `make format` — auto-format with black.
 - `make clean` — remove `tests/__pycache__` (root-owned from Docker runs).
 
-## Current focus
-
-The Gold is `okf.validate()` — required field validation for concept
-documents.
-
 ---
 
 ## Repo identity
 
-This is an OKF v0.1 conformant knowledge bundle and a personal LLM Wiki.
-Concept documents live under `bundle/`.  Root-level `.md` files (README,
-AGENTS, DOCS, CHANGELOG, TODO) are project infrastructure, not concepts.
+This is an OKF conformant personal LLM Wiki.
+Read this: https://raw.githubusercontent.com/GoogleCloudPlatform/knowledge-catalog/refs/heads/main/okf/SPEC.md
+Concept documents live under `bundle/`.
+Root-level `.md` files (README, AGENTS, DOCS, CHANGELOG, TODO) are project infrastructure, not concepts.
 The `raw/` directory holds source documents and is exempt from all checks.
 
 ## Concept document rules
@@ -51,14 +47,15 @@ The `raw/` directory holds source documents and is exempt from all checks.
 |------|-----------|
 | Frontmatter | Parseable YAML delimited by `---`. |
 | Required fields | `type` (non-empty string), `title` (≤10 words), `description` (≤20 words). |
-| Optional fields | `resource`, `tags`, `timestamp` — no format validation. |
+| Optional fields | `resource` (A URI that uniquely identifies the underlying asset the concept describes), `tags` (YAML list of short strings for cross-cutting categorization), `timestamp` (ISO 8601 datetime of last meaningful change) |
 | Body prose | One sentence per line. Each sentence ≤25 words. Total ≤200 words. |
-| Filename | Pattern `xy.xy...xy.md` where each segment is digits plus optional trailing letter. |
+| Filename | Pattern `xy.xy...xy.md` where each segment is a digit (`x`) plus optional trailing letter (`y`). For instance: `1a.2b.md`, `1a.3.md`, `4.md` |
 
 ## Cross-links
 
-Every markdown link in a concept body must resolve to an existing `.md`
-file in the bundle.  Broken links are errors.  External URLs are skipped.
+Every markdown link in a concept body must resolve to an existing `.md` file in the bundle.
+Broken links are errors.
+External URLs are skipped.
 Links in `index.md` and `log.md` are not checked.
 
 ## Reserved files
