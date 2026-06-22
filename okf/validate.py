@@ -9,6 +9,8 @@ def validate(path="bundle"):
         frontmatter = _parse_frontmatter(text)
         if "type" not in frontmatter:
             errors.append(f"Missing type in {md_file.name}")
+    if not errors:
+        print("🎉 OK! No errors found")
     return errors
 
 
