@@ -2,8 +2,8 @@ from pathlib import Path
 
 _SUCCESS_MESSAGE = "🎉 OK! No errors found"
 _REQUIRED_FIELDS = {
-    "type": "Missing type in {file}",
-    "title": "Missing title in {file}",
+    "type": "Missing or empty type in {file}",
+    "title": "Missing or empty title in {file}",
 }
 
 
@@ -14,7 +14,7 @@ def validate(path="bundle"):
         text = md_file.read_text()
         frontmatter = _parse_frontmatter(text)
         for field, template in _REQUIRED_FIELDS.items():
-            if field not in frontmatter:
+            if field not in frontmatter or not frontmatter[field].strip():
                 errors.append(template.format(file=md_file.name))
     if not errors:
         print(_SUCCESS_MESSAGE)
