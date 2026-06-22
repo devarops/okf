@@ -17,9 +17,17 @@ requirements that do not contradict it.
 
 ### 1. File discovery
 
-Walk the bundle tree collecting every `.md` file. Skip the `raw/`
-directory entirely (extra requirement) — nothing inside it is checked.
-Silently ignore all non-`.md` files.
+Only the following files are part of the OKF bundle and subject to
+validation:
+
+- Root `index.md` (reserved directory listing).
+- Root `log.md` (reserved change log).
+- Every `.md` file under `bundle/` (concept documents).
+
+Skip the `raw/` directory entirely (extra requirement) — nothing
+inside it is checked. Silently ignore all other files at the repo
+root: `README.md`, `AGENTS.md`, `DOCS.md`, `CHANGELOG.md`, `TODO.md`,
+and any non-`.md` files everywhere.
 
 ### 2. Reserved filenames
 
@@ -34,8 +42,8 @@ If a reserved file does not parse as valid markdown, that is an error.
 
 ### 3. Concept documents
 
-Every `.md` file that is not a reserved filename is a concept document.
-This includes `README.md` at the bundle root.
+Every `.md` file under `bundle/` is a concept document. Files at the
+repo root (except `index.md` and `log.md`) are not concepts.
 
 **3a. Frontmatter parsing**
 
@@ -49,15 +57,28 @@ that is an error.
 The frontmatter MUST contain a `type` key with a non-empty string value.
 If `type` is missing, empty, or not a string, that is an error.
 
-**3c. Optional fields**
+**3c. Required fields beyond the spec (extra requirement)**
 
-No optional field is validated for format or presence. `tags` may be any
-YAML value; `timestamp` may be any YAML value; `resource` may be any
-YAML value. Unknown keys are silently accepted. This matches the spec's
+The spec requires only `type`. This checker adds two more mandatory
+fields because the index generator depends on them:
+
+- `title` — MUST be present, non-empty, and 10 words or shorter.
+  Used as the display name in auto-generated `index.md` entries.
+- `description` — MUST be present, non-empty, and 20 words or shorter.
+  Used as the one-line summary in auto-generated `index.md` entries.
+
+If `title` or `description` is missing, empty, or not a string, that
+is an error.
+
+**3d. Optional fields**
+
+All remaining fields (`resource`, `tags`, `timestamp`, and any
+producer-defined keys) are optional. No format or presence validation
+is applied. Unknown keys are silently accepted. This matches the spec's
 requirement that consumers MUST NOT reject bundles for missing optional
 fields or unknown keys.
 
-**3d. Filename convention (extra requirement)**
+**3e. Filename convention (extra requirement)**
 
 Every concept document filename MUST match the pattern:
 
@@ -67,8 +88,9 @@ Where each segment is one or more digits optionally followed by a single
 letter. One segment is the minimum. Examples: `1a.2b.1a.md`, `3a.md`,
 `2.md`, `3a.3.md`.
 
-Reserved files (`index.md`, `log.md`) and `README.md` are exempt from
-this requirement.
+Reserved files (`index.md`, `log.md`) and all repo-root project files
+(`README.md`, `AGENTS.md`, `DOCS.md`, `CHANGELOG.md`, `TODO.md`) are
+exempt from this requirement.
 
 ### 4. Cross-link resolution (extra requirement)
 
@@ -123,22 +145,24 @@ exceeding 25 words is an error.
 The total word count of each concept document (excluding frontmatter)
 MUST be 200 words or shorter. A file exceeding 200 words is an error.
 
-Reserved files (`index.md`, `log.md`) and `README.md` are exempt from
-all three prose style rules.
+Reserved files (`index.md`, `log.md`) and all repo-root project files
+(`README.md`, `AGENTS.md`, `DOCS.md`, `CHANGELOG.md`, `TODO.md`) are
+exempt from all three prose style rules.
 
 ### 6. Edge cases
 
 | Situation | Handling |
 |-----------|----------|
-| Empty bundle (no `.md` files) | Passes (vacuously conformant). |
+| Empty `bundle/` directory | Passes (vacuously conformant). |
 | `.md` file with only frontmatter and no body | Passes (body is optional). |
 | `.md` file with only body and no frontmatter | Error. |
 | Frontmatter with `type: ""` (empty string) | Error. |
 | Frontmatter with `type: 42` (not a string) | Error (must be non-empty string). |
-| Symlinks to `.md` files | Followed and validated. |
+| Symlinks to `.md` files under `bundle/` | Followed and validated. |
 | `.md` file in `raw/` | Skipped entirely. |
-| Non-`.md` file anywhere outside `raw/` | Ignored (no error, no warning). |
+| Non-`.md` file anywhere | Ignored (no error, no warning). |
 | Broken link to non-`.md` target | Error (link target must exist as a `.md` file). |
+| Repo-root project file (`README.md`, etc.) | Silently skipped (not a concept). |
 
 ## Implementation plan
 
