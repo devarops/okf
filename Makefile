@@ -3,7 +3,8 @@
   init \
   install \
   setup \
-  tests
+  tests \
+  validate
 
 clean:
 	rm --force --recursive tests/__pycache__
@@ -18,5 +19,5 @@ setup: clean install
 tests:
 	pytest --verbose tests
 
-
-
+validate:
+	python -c "import okf; print(okf.validate())"
