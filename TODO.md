@@ -9,10 +9,6 @@ The items listed below are not part of the current Gold. They are backlog items 
 
 ## How it runs
 
-- `okf.validate()` in the `okf` package, zero dependencies beyond the Python standard library.
-- Accepts optional `path` argument: bundle root directory (defaults to `"bundle"`).
-- Returns a list of error strings. Empty list means the bundle is conformant.
-- Prints `🎉 OK! No errors found` to stdout when the bundle is clean.
 - All file paths in errors are relative to the bundle root.
 - Deterministic: same input → same output every time.
 
