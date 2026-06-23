@@ -163,4 +163,32 @@ okf/validate.py
 Each function is a pure function of its inputs (file tree on disk).
 No randomness, no network, no external state.
 
+---
+
+## Naming utility: `next_child_filename(parent, bundle_path="bundle")`
+
+### Location
+New module `okf/naming.py`.
+
+### Signature
+```python
+def next_child_filename(parent: str, bundle_path: str = "bundle") -> str
+```
+
+Returns a bare filename with `.md` extension, e.g. `"1a.md"`. No directory prefix.
+
+### Algorithm
+
+1. **Parse last segment**: `parent.split('.')[-1]`
+2. **Branch** on last segment type:
+   - **All digits** (e.g. `"1"`) → child candidate = `parent + "a"` (bijective base-26 suffix starting at `"a"`)
+   - **Digits + letter** (e.g. `"1a"`) → child candidate = `parent + ".1"` (numeric suffix starting at `1`)
+3. **Collision resolution**: scan `bundle_path` for existing `*.md` filenames once, then increment the appended suffix (letter sequence or numeric sequence) until a gap is found. Both sequences are infinite — a gap always exists.
+4. **Input assumptions**: parent is already OKF-conformant; no validation. Non-conformant input is caller's responsibility.
+
+### Rules of thumb
+- The parent acts as a fixed prefix; only the appended suffix (letter or numeric) is incremented on collision.
+- Multi-letter suffixes (`aa`, `ab`, ...) and multi-digit numbers (`10`, `11`, ...) are produced as needed.
+- The `AGENTS.md` spec currently says one trailing letter per segment — that description will need updating to reflect the broader convention.
+
 [spec]: https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md
