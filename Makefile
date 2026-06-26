@@ -9,7 +9,8 @@ all: check tests
   install \
   setup \
   tests \
-  validate
+  validate \
+  verify
 
 module = okf
 
@@ -40,3 +41,6 @@ tests:
 
 validate:
 	python -c "import okf; print(okf.validate())"
+
+verify:
+	qed verify specs

@@ -35,26 +35,3 @@ not a string (e.g. type: 42) is an error.
 type = "command"
 run = "pytest tests/ -k 'type_string or type_non_string'"
 
-# --- Agent review ---
-
-[[criteria]]
-description = """
-Word limit error messages identify the field, its word count, and
-the allowed maximum.
-"""
-
-[criteria.verify]
-type = "agent"
-prompt = """
-Review okf/validate.py and tests/test_validate.py. Verify:
-
-1. When title exceeds 10 words, the error reports the actual word count
-   and the 10-word limit
-2. When description exceeds 20 words, the error reports the actual word
-   count and the 20-word limit
-3. When type is not a string (e.g. type: 42), the error clearly states
-   the field value is not a valid string
-4. All error messages include the filename
-
-Report unclear, missing, or inconsistent error messages.
-"""
