@@ -1,18 +1,9 @@
-# The Gold
-- (None)
-
----
-
-# Backlog not part of the current Gold
-
-The items listed below are not part of the current Gold. They are backlog items kept for future cycles.
-
-## How it runs
-
-- All file paths in errors are relative to the bundle root.
-- Deterministic: same input → same output every time.
-
 ## Conformance criteria
+
+> High-level/user-facing specs moved to `specs/`:
+> - `specs/error-output.spec.toml` — relative paths, determinism, message format
+> - `specs/reserved-files.spec.toml` — reserved filename rules
+> - `specs/concept-fields.spec.toml` — word count limits, field type checks
 
 ### 1. File discovery
 
@@ -30,14 +21,10 @@ and any non-`.md` files everywhere.
 
 ### 2. Reserved filenames
 
-Two filenames are reserved and MUST NOT appear in the concept set:
+> Spec defined in `specs/reserved-files.spec.toml`
 
-| Filename | Rule |
-|----------|------|
-| `index.md` | No frontmatter. Exception: a root `index.md` MAY contain a frontmatter block with a single key `okf_version`. |
-| `log.md` | Date headings MUST be valid ISO 8601 (`YYYY-MM-DD`). Warn if a bold prefix outside the conventional set (`**Update**`, `**Creation**`, `**Deprecation**`, `**Initialization**`). |
-
-If a reserved file does not parse as valid markdown, that is an error.
+`index.md` and `log.md` rules (frontmatter restriction, ISO 8601 headings,
+bold prefix warnings). Implement per the spec criteria.
 
 ### 3. Concept documents
 
@@ -53,11 +40,9 @@ that is an error.
 
 **3b. Field word count limits (extra requirement)**
 
-- `title` — MUST be 10 words or shorter.
-- `description` — MUST be 20 words or shorter.
+> Spec defined in `specs/concept-fields.spec.toml`
 
-A field exceeding its word limit is an error. Presence and non-empty
-value are already validated.
+`title` ≤ 10 words, `description` ≤ 20 words. Implement per the spec criteria.
 
 **3c. Filename convention (extra requirement)**
 
@@ -136,7 +121,6 @@ exempt from all three prose style rules.
 |-----------|----------|
 | `.md` file with only frontmatter and no body | Passes (body is optional). |
 | `.md` file with only body and no frontmatter | Error. |
-| Frontmatter with `type: 42` (not a string) | Error (must be non-empty string). |
 | Symlinks to `.md` files under `bundle/` | Followed and validated. |
 | `.md` file in `raw/` | Skipped entirely. |
 | Non-`.md` file anywhere | Ignored (no error, no warning). |
@@ -147,17 +131,19 @@ exempt from all three prose style rules.
 
 ```
 okf/validate.py
-└── validate(path)
-    ├── discover_files(root)      # walk tree, skip raw/, return file list
-    ├── validate_concepts(files)  # frontmatter + required fields + filename
-    ├── validate_reserved(files)  # index.md + log.md rules
-    ├── validate_links(files)     # cross-link resolution (concepts only)
-    ├── validate_prose(files)     # sentence-per-line, ≤25 words, ≤200 total
-    └── return errors             # caller prints success if empty
+└── validate(path)  ✅  # entry point + basic frontmatter + required fields
+    ├── discover_files(root)      # walk tree, skip raw/, return file list  ❌
+    ├── validate_concepts(files)  # frontmatter + required fields ✅ / filename ❌
+    ├── validate_reserved(files)  # spec/s/reserved-files.spec.toml  ❌
+    ├── validate_links(files)     # cross-link resolution (concepts only)  ❌
+    ├── validate_prose(files)     # sentence-per-line, ≤25 words, ≤200 total  ❌
+    └── return errors             # caller prints success if empty ✅ / error.md spec ❌
 ```
 
-Each function is a pure function of its inputs (file tree on disk).
-No randomness, no network, no external state.
+High-level specs now live in `specs/`:
+- `specs/reserved-files.spec.toml` — reserved filename rules
+- `specs/concept-fields.spec.toml` — word count limits, field type checks
+- `specs/error-output.spec.toml` — relative paths, determinism, message format
 
 ---
 

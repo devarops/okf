@@ -1,0 +1,70 @@
+#:schema ../docs/spec.schema.json
+
+name = "reserved-files"
+
+# Reserved filenames (§2): index.md and log.md have special rules.
+
+[[criteria]]
+description = """
+Root index.md must have no frontmatter, or a frontmatter block
+containing only the okf_version key.
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'reserved or index'"
+
+[[criteria]]
+description = """
+Root log.md must have valid ISO 8601 (YYYY-MM-DD) date headings.
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'log_date or log_iso'"
+
+[[criteria]]
+description = """
+Bold prefixes in log.md outside the conventional set
+(**Update**, **Creation**, **Deprecation**, **Initialization**)
+produce a warning.
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'log_bold or log_warn'"
+
+[[criteria]]
+description = """
+Reserved files (index.md, log.md) that do not parse as valid markdown
+produce an error.
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'reserved_parse or markdown_error'"
+
+# --- Agent review ---
+
+[[criteria]]
+description = """
+Error messages for reserved-file violations are clear, actionable,
+and reference the specific rule violated.
+"""
+
+[criteria.verify]
+type = "agent"
+prompt = """
+Review okf/validate.py and tests/test_validate.py. Verify:
+
+1. When index.md has frontmatter keys other than okf_version, the error
+   message names the offending key
+2. When log.md has a non-ISO date heading, the error shows the actual
+   heading and the expected format (YYYY-MM-DD)
+3. When log.md uses an unrecognized bold prefix, the warning lists the
+   conventional set
+4. All reserved-file error messages include the filename and a brief
+   description of what rule was violated
+
+Report any unclear, missing, or inconsistent error messages.
+"""

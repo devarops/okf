@@ -1,0 +1,76 @@
+#:schema ../docs/spec.schema.json
+
+name = "error-output"
+
+# Error output quality — all validation errors must be clear,
+# actionable, and consistently formatted.
+
+[[criteria]]
+description = """
+All file paths in error messages are relative to the bundle root,
+not absolute paths or bare filenames.
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'relative_path or path_format'"
+
+[[criteria]]
+description = """
+Output is deterministic: same input produces the same error output
+every time (no randomness, no network, no external state).
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'deterministic or idempotent'"
+
+[[criteria]]
+description = """
+Error messages follow a consistent format:
+<relative-path>: <rule description> — <details>
+"""
+
+[criteria.verify]
+type = "command"
+run = "pytest tests/ -k 'error_format or message_format'"
+
+# --- Agent review ---
+
+[[criteria]]
+description = """
+Error output readability and UX.
+"""
+
+[criteria.verify]
+type = "agent"
+prompt = """
+Review okf/validate.py and the test suite. Verify:
+
+1. Every error message begins with a relative file path
+2. Messages use consistent delimiter (colon, dash, etc.)
+3. Messages are concise but explain what is wrong and what is expected
+4. Success message (🎉 OK! No errors found) only prints when there are
+   zero errors
+5. Errors are returned as a list of strings (not printed), allowing
+   callers to format their own output
+6. The error list is sorted deterministically (e.g. by file path)
+
+Report any inconsistencies or UX issues.
+"""
+
+# --- Human review ---
+
+[[criteria]]
+description = """
+Error output is clear, scannable, and provides actionable feedback
+at a glance.
+"""
+
+[criteria.verify]
+type = "human"
+instruction = """
+Run: python -c "import okf; print(*okf.validate('tests/data'), sep='\\n')"
+Check that the output is clear and scannable — each error starts with a \
+relative path, the rule violation is obvious, and the summary tells you \
+what to fix."""
